@@ -4,6 +4,7 @@
 import os
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 
 def LoadCSV(dir_path):
@@ -65,7 +66,7 @@ def TrainTestSplit(df, df_alert, df_test):
         2. 此切分僅為範例，較標準的做法是基於訓練集再且分成train和validation，請有興趣的參賽者自行切分
         3. 由於待預測帳戶清單僅為玉山戶，所以我們在此範例僅使用玉山帳戶做訓練
     """  
-    X_train = df[(~df['acct'].isin(df_test['acct'])) & (df['is_esun']==1)].drop(columns=['is_esun']).copy()
+    X_train = df[(~df['acct'].isin(df_test['acct']))].drop(columns=['is_esun']).copy()
     y_train = X_train['acct'].isin(df_alert['acct']).astype(int)
     X_test = df[df['acct'].isin(df_test['acct'])].drop(columns=['is_esun']).copy()
     
@@ -76,10 +77,14 @@ def Modeling(X_train, y_train, X_test):
     """
     Decision Tree的範例程式，參賽者可以在這裡實作自己需要的方法
     """
-    model = DecisionTreeClassifier(random_state=42)
-    model.fit(X_train.drop(columns=['acct']), y_train)
-    y_pred = model.predict(X_test.drop(columns=['acct']))   
+    # model = DecisionTreeClassifier(random_state=42)
+    # model.fit(X_train.drop(columns=['acct']), y_train)
+    # y_pred = model.predict(X_test.drop(columns=['acct']))   
     
+    model = RandomForestClassifier()
+    model.fit(X_train.drop(columns=['acct']), y_train)
+    y_pred = model.predict(X_test.drop(columns=['acct']))
+
     print(f"(Finish) Modeling")
     return y_pred
 
